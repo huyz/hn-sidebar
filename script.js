@@ -17,7 +17,7 @@ $(document).ready(function() {
     port.postMessage(params);
   }
 
-  function searchHN() {
+  window.searchHN = function() {
     // don't run on frames or iframes.
     // from http://stackoverflow.com/questions/1535404/how-to-exclude-iframe-in-greasemonkey
     if (window.top != window.self) { return; }
@@ -52,6 +52,7 @@ $(document).ready(function() {
 
       // If there is a result, create the orange tab and panel
       var foundItem = matches[0];
+      destroyPanel();
       createPanel(HN_BASE + 'item?id=' + foundItem.objectID, foundItem.title);
     });
   }
@@ -99,23 +100,23 @@ $(document).ready(function() {
       var embedPosition = openPanel ? "0px" : "-700px";
       var tabPosition = openPanel ? "-25px" : "0px";
 
-    var easing = "swing",
-      tabAnimationTime = 50,
-      embedAnimationTime = 100;
+      var easing = "swing",
+        tabAnimationTime = 50,
+        embedAnimationTime = 100;
 
       if (openPanel) {
         fixIframeHeight();
         HNtab.animate({right: tabPosition}, tabAnimationTime, easing, function() {
           HNtab.hide();
         });
-    HNembed.show();
-    HNembed.animate({right: embedPosition}, embedAnimationTime,easing);
+        HNembed.show();
+        HNembed.animate({right: embedPosition}, embedAnimationTime,easing);
       } else {
         HNembed.animate({right: embedPosition}, embedAnimationTime, easing, function() {
-      HNembed.hide();
+          HNembed.hide();
         });
-    HNtab.show();
-    HNtab.animate({right: tabPosition}, tabAnimationTime, easing);
+        HNtab.show();
+        HNtab.animate({right: tabPosition}, tabAnimationTime, easing);
       }
     }
 
@@ -138,8 +139,14 @@ $(document).ready(function() {
       doc.write(response);
       doc.close();
     });
+
+    // After creation, click the panel to open it
+    HNtab.click();
   }
-  
-  searchHN();
-  
+
+
+  function destroyPanel() {
+    var HNembed = $("#HNembed");
+    HNembed.remove();
+  }
 });
